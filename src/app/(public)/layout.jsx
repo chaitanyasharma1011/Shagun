@@ -14,7 +14,7 @@ export default function Layout({ children }) {
       >
         <GiTakeMyMoney color="green" size={50} />
         <p
-          className="font-medium text-white text-lg"
+          className="font-medium text-white text-lg cursor-pointer"
           onClick={() => router.push("/login")}
         >
           Login

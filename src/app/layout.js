@@ -1,5 +1,10 @@
+import Theme from "@/library/muiTheme";
+import { AppRouterCacheProvider } from "@mui/material-nextjs/v13-appRouter";
+import { ThemeProvider } from "@mui/material";
+import { Providers } from "@/redux/provider";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import Notification from "@/components/notification";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,7 +16,16 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <Providers>
+        <AppRouterCacheProvider>
+          <ThemeProvider theme={Theme}>
+            <body suppressHydrationWarning={true} className={inter.className}>
+              {children}
+              <Notification />
+            </body>
+          </ThemeProvider>
+        </AppRouterCacheProvider>
+      </Providers>
     </html>
   );
 }
