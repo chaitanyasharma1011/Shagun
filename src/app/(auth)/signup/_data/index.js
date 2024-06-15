@@ -4,7 +4,7 @@ export const schema = yup.object().shape({
   name: yup.string().required("This field is required").trim(),
   email: yup
     .string()
-    // .email("Enter a valid email")
+    .email("Enter a valid email")
     .required("Email is required")
     .trim(),
   phone: yup

@@ -3,35 +3,40 @@
 import AuthButton from "@/components/button/authButton";
 import AuthInput from "@/components/input/authInput";
 import { onRenderInput, onRenderError, onFormValidate } from "@/library/helper";
+import { loginUser } from "@/redux/slices/loggedInuserSlice";
 import { showNotification } from "@/redux/slices/notificationSlice";
 import { usersState } from "@/redux/slices/usersSlice";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { schema } from "./_data";
 
 export default function Login() {
   const dispatch = useDispatch();
+  const router = useRouter();
   const users = useSelector(usersState);
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState({});
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    const { error, values, errorPath } = await onFormValidate(schema, form);
+    const { error, errorPath } = await onFormValidate(schema, form);
     if (error) {
       setErrors(errorPath);
       return;
     }
     setErrors({});
-    if (users[form?.phone] && users[form?.phone]?.password === form?.password)
+    if (users[form?.phone] && users[form?.phone]?.password === form?.password) {
       dispatch(
         showNotification({
           severity: "success",
           message: "Credentials approved",
         })
       );
-    else
+      dispatch(loginUser({ ...users[form?.phone] }));
+      router.push("/events");
+    } else
       dispatch(
         showNotification({
           severity: "error",

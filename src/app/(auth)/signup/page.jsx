@@ -5,7 +5,6 @@ import AuthInput from "@/components/input/authInput";
 import { onRenderInput, onRenderError, onFormValidate } from "@/library/helper";
 import { showNotification } from "@/redux/slices/notificationSlice";
 import { signupUser, usersState } from "@/redux/slices/usersSlice";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,7 +16,7 @@ export default function Login() {
   const [errors, setErrors] = useState({});
   const [form, setForm] = useState({});
   const users = useSelector(usersState);
-  console.log(users);
+
   const onSubmit = async (e) => {
     e.preventDefault();
     const {

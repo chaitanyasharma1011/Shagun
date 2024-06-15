@@ -23,6 +23,10 @@ body {
   padding: 0;
 }
 
+.card-heading {
+  @apply font-medium text-base sm:text-[20px] not-italic leading-6 sm:leading-[30px] text-[#323232];
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
