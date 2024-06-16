@@ -1,3 +1,5 @@
+import * as yup from "yup";
+
 // REGEX USED IN VALIDATION
 export const regex = {
   EMAIL:
@@ -83,3 +85,30 @@ export const onRenderInput = (
     );
   },
 });
+
+export const yupDateFormat = (required = false, field = "dob") => {
+  return yup
+    .string()
+    .nullable()
+    .test({
+      name: "dayjs-custom-test",
+      test: (value, { createError: error }) => {
+        let passed = true;
+        let message = null;
+
+        if (!required) passed = true;
+
+        if (required && !value) {
+          passed = false;
+          message = "Date is required";
+        }
+
+        if (value === "Invalid date") {
+          passed = false;
+          message = "Date is invalid";
+        }
+
+        return passed || error({ path: field, message });
+      },
+    });
+};

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Empty from "images/illustrations/empty_product_views.png";
 import Image from "next/image";
 import {
@@ -16,12 +16,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { eventsState } from "@/redux/slices/eventsApiSlice";
 import { loggedInUserState } from "@/redux/slices/loggedInuserSlice";
 import { header } from "./_data";
+import dayjs from "dayjs";
+import AppButton from "@/components/button/appButton";
+import AppModal from "@/components/modal";
+import AddEvent from "./_components/add-event";
 
+const sx = {
+  borderColor: "#F8F8F8",
+  color: "#6E6E6E",
+};
 export default function Events() {
   const dispatch = useDispatch();
   const user = useSelector(loggedInUserState);
   const results = useSelector(eventsState) || [];
-  //   console.log(useSelector(eventsState));
+  const [modal, setModal] = useState(false);
   let pastSmallScreen = useMediaQuery("(min-width:768px)");
 
   const render_empty_list = (
@@ -66,45 +74,23 @@ export default function Events() {
           <TableRow
             key={row?.id}
             className="cursor-pointer"
-            onClick={(e) => {
-              e.stopPropagation();
-              handleModal("view", true);
-            }}
+            // onClick={(e) => {
+            //   e.stopPropagation();
+            //   handleModal("view", true);
+            // }}
           >
-            <TableCell sx={sx}>{row?.product_data?.name || "NA"}</TableCell>
-            <TableCell sx={{ ...sx, textAlign: "center" }}>
-              {parseFloat(units)?.toFixed(1) || "NA"}
+            <TableCell sx={sx}>
+              {dayjs(row?.date)?.format("DD MMM[,] YYYY")}
             </TableCell>
             <TableCell sx={{ ...sx, textAlign: "center" }}>
-              {row?.valuation_date
-                ? dayjs(row?.valuation_date)?.format("DD MMM[,] YYYY")
-                : "NA"}
+              {row?.name || "NA"}
             </TableCell>
             <TableCell sx={{ ...sx, textAlign: "center" }}>
-              {portfolioWithDenotion(market_value) || "NA"}
+              {row?.venue || "NA"}
             </TableCell>
             <TableCell sx={{ ...sx, textAlign: "center" }}>
-              {`${((since_inception_xirr || 0) * 100).toFixed(1)} %`}
+              {row?.guests.length || "NA"}
             </TableCell>
-            {/* <TableCell sx={{ ...sx, textAlign: "center" }}>
-                  {portfolioWithDenotion(row?.investment_amount) || "NA"}
-                </TableCell>
-                <TableCell sx={{ ...sx, textAlign: "center" }}>
-                  {dayjs(row?.investment_date)?.format("DD MMM[,] YYYY") || "NA"}
-                </TableCell> */}
-            {writable ? (
-              <TableCell sx={{ ...sx, textAlign: "center" }}>
-                <div
-                  className="w-full flex justify-center items-center"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleModal("delete", true);
-                  }}
-                >
-                  <RiDeleteBinLine color="#EF5055" size={18} />
-                </div>
-              </TableCell>
-            ) : null}
           </TableRow>
         );
       })}
@@ -123,68 +109,26 @@ export default function Events() {
             }}
             className="w-full relative block md:hidden mt-4 p-4 bg-[#F9F9F9] cursor-pointer space-y-2"
           >
-            {writable ? (
-              <span
-                className="cursor-pointer absolute right-2 top-2"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleModal("delete", true);
-                }}
-              >
-                <RiDeleteBinLine color="#EF5055" size={18} />
-              </span>
-            ) : null}
             <div className="space-y-1">
               <label className="text-[#A3A3A3] text-sm">Name</label>
-              <p className="text-sm">{row?.product_data?.name || "NA"}</p>
+              <p className="text-sm">{row?.name || "NA"}</p>
             </div>
             <div className="w-full flex justify-between">
               <div className="space-y-1">
-                <label className="text-[#A3A3A3] text-sm">Units</label>
+                <label className="text-[#A3A3A3] text-sm">Date</label>
                 <p className="text-sm">
-                  {parseFloat(units)?.toFixed(1) || "NA"}
+                  {dayjs(row?.date)?.format("DD MMM[,] YYYY")}
                 </p>
               </div>
               <div className="space-y-1">
-                <label className="text-[#A3A3A3] text-sm">Valuation Date</label>
-                <p className="text-sm">
-                  {row?.valuation_date
-                    ? dayjs(row?.valuation_date)?.format("DD MMM[,] YYYY")
-                    : "NA"}
-                </p>
+                <label className="text-[#A3A3A3] text-sm">Venue</label>
+                <p className="text-sm">{row?.venue || "NA"}</p>
               </div>
             </div>
-            <div className="w-full flex justify-between">
-              <div className="space-y-1">
-                <label className="text-[#A3A3A3] text-sm">
-                  Since Inception XIRR
-                </label>
-                <p className="text-sm">{`${(
-                  (since_inception_xirr || 0) * 100
-                ).toFixed(1)} %`}</p>
-              </div>
-              <div className="space-y-1">
-                <label className="text-[#A3A3A3] text-sm">Current Value</label>
-                <p className="text-sm">
-                  {portfolioWithDenotion(market_value) || "NA"}
-                </p>
-              </div>
+            <div className="space-y-1">
+              <label className="text-[#A3A3A3] text-sm">Guest Count</label>
+              <p className="text-sm">{row?.guests.length || "NA"}</p>
             </div>
-
-            {/* <div className="w-full flex justify-between">
-                  <div className="space-y-1">
-                    <label className="text-[#A3A3A3] text-sm">Investment Amount</label>
-                    <p className="text-sm">
-                      {portfolioWithDenotion(row?.investment_amount) || "NA"}
-                    </p>
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[#A3A3A3] text-sm">Investment Date</label>
-                    <p className="text-sm">
-                      {dayjs(row?.investment_date)?.format("DD MMM[,] YYYY") || "NA"}
-                    </p>
-                  </div>
-                </div> */}
           </div>
         );
       })}
@@ -203,8 +147,20 @@ export default function Events() {
 
   return (
     <div className="w-full min-h-inherit bg-white rounded-md p-4 space-y-6">
-      <h2 className="card-heading">Your Events</h2>
+      <div className="w-full flex justify-between">
+        <h2 className="card-heading">Your Events</h2>
+        <AppButton onClick={() => setModal(true)}>Add Event</AppButton>
+      </div>
       {results.length ? render_table : render_empty_list}
+      <AppModal
+        ariaDescribedBy="protected-add-event"
+        ariaLabelledBy="protected-add-event"
+        open={modal}
+        handleClose={() => setModal(false)}
+        className="w-[calc(100vw_-_32px)] h-auto p-4 lg:w-[50vw]"
+      >
+        <AddEvent />
+      </AppModal>
     </div>
   );
 }

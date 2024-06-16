@@ -2,7 +2,9 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = [];
+const initialState = [
+  { id: "yfg", name: "Shadi", venue: "Ujjain", guests: ["sdsd"] },
+];
 
 const eventsSlice = createSlice({
   name: "events",
