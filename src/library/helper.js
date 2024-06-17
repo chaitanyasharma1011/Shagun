@@ -112,3 +112,7 @@ export const yupDateFormat = (required = false, field = "dob") => {
       },
     });
 };
+
+export const togglePopper = (setAnchorEl, popperRef) => {
+  setAnchorEl((prevAnchor) => (prevAnchor ? null : popperRef.current));
+};

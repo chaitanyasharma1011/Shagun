@@ -2,6 +2,7 @@ import * as yup from "yup";
 
 export const schema = yup.object().shape({
   name: yup.string().required("This field is required").trim(),
+  city: yup.string().required("This field is required").trim(),
   email: yup
     .string()
     .email("Enter a valid email")

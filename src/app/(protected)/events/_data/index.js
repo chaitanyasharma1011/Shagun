@@ -26,12 +26,36 @@ export const EVENT_CREATION_FORM = {
   createState: (data = {}) => ({
     name: data?.name || "",
     venue: data?.venue || "",
-    date: dayjs(data?.date || ""),
+    date: dayjs(data?.date),
     guests: data?.guests || [],
   }),
   schema: yup.object().shape({
     name: yup.string().required("This field is required").trim(),
     venue: yup.string().required("This field is required").trim(),
     date: yupDateFormat(true),
+  }),
+};
+
+export const GUEST_CREATION_FORM = {
+  createState: (data = {}) => ({
+    name: data?.name || "",
+    phone: data?.phone || "",
+    email: data?.email || "",
+    city: data?.city || "",
+    host: data?.host || "",
+    contribution: data?.contribution || "",
+  }),
+  schema: yup.object().shape({
+    name: yup.string().required("This field is required").trim(),
+    city: yup.string().required("This field is required").trim(),
+    email: yup
+      .string()
+      .email("Enter a valid email")
+      .required("Email is required")
+      .trim(),
+    phone: yup
+      .string()
+      .length(10, "Enter a valid phone number")
+      .required("Phone number is required"),
   }),
 };

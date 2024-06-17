@@ -2,18 +2,16 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = [
-  { id: "yfg", name: "Shadi", venue: "Ujjain", guests: ["sdsd"] },
-];
+const initialState = [];
 
 const eventsSlice = createSlice({
   name: "events",
   initialState,
   reducers: {
-    update: (state, action) => [...state, ...action.payload],
+    add: (state, action) => [...state, { ...action.payload }],
   },
 });
 
 export const eventsState = (state) => state.events;
-export const { update: updateEvents } = eventsSlice.actions;
+export const { add: addEvents } = eventsSlice.actions;
 export default eventsSlice;

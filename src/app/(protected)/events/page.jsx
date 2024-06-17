@@ -29,6 +29,9 @@ export default function Events() {
   const dispatch = useDispatch();
   const user = useSelector(loggedInUserState);
   const results = useSelector(eventsState) || [];
+  const filteredResults = results.filter(
+    (result) => result.host === user?.phone
+  );
   const [modal, setModal] = useState(false);
   let pastSmallScreen = useMediaQuery("(min-width:768px)");
 
@@ -69,7 +72,7 @@ export default function Events() {
 
   const render_body = (
     <TableBody>
-      {results.map((row = {}) => {
+      {filteredResults.map((row = {}) => {
         return (
           <TableRow
             key={row?.id}
@@ -99,7 +102,7 @@ export default function Events() {
 
   let render_table = (
     <div className="w-full space-y-3">
-      {results.map((row = {}) => {
+      {filteredResults.map((row = {}) => {
         return (
           <div
             key={row?.id}
@@ -151,7 +154,7 @@ export default function Events() {
         <h2 className="card-heading">Your Events</h2>
         <AppButton onClick={() => setModal(true)}>Add Event</AppButton>
       </div>
-      {results.length ? render_table : render_empty_list}
+      {filteredResults.length ? render_table : render_empty_list}
       <AppModal
         ariaDescribedBy="protected-add-event"
         ariaLabelledBy="protected-add-event"
@@ -159,7 +162,7 @@ export default function Events() {
         handleClose={() => setModal(false)}
         className="w-[calc(100vw_-_32px)] h-auto p-4 lg:w-[50vw]"
       >
-        <AddEvent />
+        <AddEvent handleClose={() => setModal(false)} />
       </AppModal>
     </div>
   );

@@ -24,7 +24,7 @@ export default function Login() {
       values = {},
       errorPath,
     } = await onFormValidate(schema, form);
-    const { phone, email, password, name } = values;
+    const { phone, email, password, name, city } = values;
     if (error) {
       setErrors(errorPath);
       return;
@@ -40,7 +40,7 @@ export default function Login() {
     setErrors({});
 
     try {
-      dispatch(signupUser({ [phone]: { email, password, name } }));
+      dispatch(signupUser({ [phone]: { email, password, name, city, phone } }));
       dispatch(
         showNotification({ severity: "success", message: "Signup Successful" })
       );
@@ -54,7 +54,7 @@ export default function Login() {
   };
   return (
     <form
-      className="w-full h-full flex flex-col justify-center items-center space-y-8 md:space-y-4"
+      className="w-full h-full flex flex-col justify-center items-center space-y-4 md:space-y-2"
       onSubmit={onSubmit}
     >
       <h2 className="font-montserrat text-2xl leading-[36px] text-[#FCFCFD]">
@@ -70,6 +70,17 @@ export default function Login() {
           //   disabled={isLoading}
           {...onRenderError(errors.name)}
           {...onRenderInput(form, setForm, "name", "")}
+        />
+      </div>
+      <div className="w-full">
+        <AuthInput
+          id="custom-input-auth-signup-city"
+          label="City"
+          placeholder="Enter your city"
+          autocomplete="on"
+          //   disabled={isLoading}
+          {...onRenderError(errors.city)}
+          {...onRenderInput(form, setForm, "city", "")}
         />
       </div>
       <div className="w-full">
