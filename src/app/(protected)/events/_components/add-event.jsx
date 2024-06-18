@@ -4,36 +4,48 @@ import AppInput from "@/components/input/appInput";
 import { onFormValidate, onRenderError, onRenderInput } from "@/library/helper";
 import { loggedInUserState } from "@/redux/slices/loggedInuserSlice";
 import dayjs from "dayjs";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { EVENT_CREATION_FORM } from "../_data";
 import Guest from "./guest";
 import AppModal from "@/components/modal";
 import { showNotification } from "@/redux/slices/notificationSlice";
-import { addEvents } from "@/redux/slices/eventsApiSlice";
-import { v4 } from "uuid";
+import {
+  addEvents,
+  eventsState,
+  updateEvents,
+} from "@/redux/slices/eventsApiSlice";
+import { FiEdit } from "react-icons/fi";
 
 const { createState, schema } = EVENT_CREATION_FORM;
-export default function AddEvent({ handleClose }) {
+export default function AddEvent({ handleClose, event }) {
   const dispatch = useDispatch();
+  const events = useSelector(eventsState);
   const [form, setForm] = useState(createState({}));
   const [modal, setModal] = useState(false);
-  const { guests = [] } = form;
+  const [guest, setGuest] = useState({});
   const [errors, setErrors] = useState({});
+
+  const { guests = [] } = form;
 
   const user = useSelector(loggedInUserState);
 
   const addGuest = (guest) => {
-    const temp = { ...form };
-    temp?.guests.push({ ...guest });
+    let temp = { ...form };
+    let ind = temp?.guests.findIndex((item) => item?.id === guest?.id);
+    if (ind === -1) temp.guests = [...temp.guests, { ...guest }];
+    else temp.guests[ind] = { ...guest };
     setForm(temp);
   };
 
   const removeGuest = (e, index) => {
     e.preventDefault();
     const temp = { ...form };
-    temp?.guests.splice(index, 1);
+
+    let tempGuests = [...temp?.guests];
+    tempGuests.splice(index, 1);
+    temp.guests = tempGuests;
     setForm(temp);
   };
 
@@ -44,22 +56,42 @@ export default function AddEvent({ handleClose }) {
       setErrors(errorPath);
       return;
     }
-    dispatch(
-      addEvents({
-        ...form,
-        date: dayjs(form?.date).format("YYYY-MM-DD"),
-        host: user?.phone,
-        id: v4(),
-      })
-    );
+    const temp = [...events];
+    let ind = temp?.findIndex((item) => item?.id === form?.id);
+    if (ind === -1)
+      dispatch(
+        addEvents({
+          ...form,
+          date: dayjs(form?.date).format("YYYY-MM-DD"),
+          host: user?.phone,
+        })
+      );
+    else {
+      temp[ind] = { ...form, date: dayjs(form?.date).format("YYYY-MM-DD") };
+      dispatch(updateEvents([...temp]));
+    }
+
     dispatch(
       showNotification({
         severity: "success",
-        message: "Event created successfully",
+        message:
+          ind === -1
+            ? "Event created successfully"
+            : "Event Updated Successfully",
       })
     );
     handleClose();
   };
+
+  const handleGuest = (e, guest) => {
+    e.preventDefault();
+    setModal(true);
+    setGuest(guest);
+  };
+
+  useEffect(() => {
+    setForm(createState(event));
+  }, [event]);
 
   return (
     <div className="space-y-4">
@@ -101,21 +133,23 @@ export default function AddEvent({ handleClose }) {
                 <p className="text-sm">{guest?.email || "NA"}</p>
               </div>
             </div>
-            <div
-              className="absolute top-2 right-2 cursor-pointer"
-              onClick={(e) => removeGuest(e, index)}
-            >
-              <RiDeleteBinLine color="#EF5055" size={18} />
+            <div className="absolute flex space-x-4 top-2 right-2 cursor-pointer">
+              <FiEdit
+                color="#1982F8"
+                size={18}
+                className="cursor-pointer"
+                onClick={(e) => handleGuest(e, guest)}
+              />
+              <RiDeleteBinLine
+                color="#EF5055"
+                className="cursor-pointer"
+                size={18}
+                onClick={(e) => removeGuest(e, index)}
+              />
             </div>
           </div>
         ))}
-        <AppButton
-          variant="outlined"
-          onClick={(e) => {
-            e.preventDefault();
-            setModal(true);
-          }}
-        >
+        <AppButton variant="outlined" onClick={(e) => handleGuest(e, {})}>
           Add Guest
         </AppButton>
         <div className="flex w-full justify-end">
@@ -129,7 +163,11 @@ export default function AddEvent({ handleClose }) {
         handleClose={() => setModal(false)}
         className="w-[calc(100vw_-_32px)] h-auto p-4 lg:w-[40vw]"
       >
-        <Guest addGuest={addGuest} handleClose={() => setModal(false)} />
+        <Guest
+          addGuest={addGuest}
+          guest={guest}
+          handleClose={() => setModal(false)}
+        />
       </AppModal>
     </div>
   );

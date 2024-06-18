@@ -5,10 +5,17 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   1234567890: {
     email: "cs@gmail.com",
-    password: "Fucklove1*",
+    password: "qwertyuiop",
     name: "Chaitanya",
     city: "Ujjain",
     phone: "1234567890",
+  },
+  8319299423: {
+    email: "chaitanya@gmail.com",
+    password: "qwertyuiop1",
+    name: "Cs",
+    city: "Nagda",
+    phone: "8319299423",
   },
 };
 

@@ -13,13 +13,16 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { eventsState } from "@/redux/slices/eventsApiSlice";
+import { eventsState, updateEvents } from "@/redux/slices/eventsApiSlice";
 import { loggedInUserState } from "@/redux/slices/loggedInuserSlice";
 import { header } from "./_data";
 import dayjs from "dayjs";
 import AppButton from "@/components/button/appButton";
 import AppModal from "@/components/modal";
 import AddEvent from "./_components/add-event";
+
+import { FiEdit } from "react-icons/fi";
+import { HiLockClosed } from "react-icons/hi2";
 
 const sx = {
   borderColor: "#F8F8F8",
@@ -33,7 +36,20 @@ export default function Events() {
     (result) => result.host === user?.phone
   );
   const [modal, setModal] = useState(false);
+  const [event, setEvent] = useState({});
   let pastSmallScreen = useMediaQuery("(min-width:768px)");
+
+  const handleEvent = (event) => {
+    setEvent(event);
+    setModal(true);
+  };
+
+  const lockEvent = (row) => {
+    let temp = results.map((result) => ({ ...result }));
+    let ind = temp?.findIndex((item) => item?.id === row?.id);
+    temp[ind].open = !temp[ind].open;
+    dispatch(updateEvents([...temp]));
+  };
 
   const render_empty_list = (
     <div className="flex flex-col justify-center items-center space-y-4 min-h-full my-[50px]">
@@ -73,10 +89,14 @@ export default function Events() {
   const render_body = (
     <TableBody>
       {filteredResults.map((row = {}) => {
+        let sum = 0;
+        row?.guests.forEach((guest) => {
+          sum += parseInt(guest?.contribution || 0);
+        });
         return (
           <TableRow
             key={row?.id}
-            className="cursor-pointer"
+            // className="cursor-pointer"
             // onClick={(e) => {
             //   e.stopPropagation();
             //   handleModal("view", true);
@@ -94,6 +114,25 @@ export default function Events() {
             <TableCell sx={{ ...sx, textAlign: "center" }}>
               {row?.guests.length || "NA"}
             </TableCell>
+            <TableCell sx={{ ...sx, textAlign: "center" }}>
+              {sum.toLocaleString("en-IN") || "NA"}
+            </TableCell>
+            <TableCell sx={{ ...sx, textAlign: "center" }}>
+              <div className="flex justify-center space-x-4">
+                <FiEdit
+                  color="#1982F8"
+                  size={18}
+                  className="cursor-pointer"
+                  onClick={() => handleEvent(row)}
+                />
+                <HiLockClosed
+                  color={row?.open ? "#CACACA" : "#FFC300"}
+                  size={18}
+                  className="cursor-pointer"
+                  onClick={() => lockEvent(row)}
+                />
+              </div>
+            </TableCell>
           </TableRow>
         );
       })}
@@ -106,11 +145,11 @@ export default function Events() {
         return (
           <div
             key={row?.id}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleModal("view", true);
-            }}
-            className="w-full relative block md:hidden mt-4 p-4 bg-[#F9F9F9] cursor-pointer space-y-2"
+            // onClick={(e) => {
+            //   e.stopPropagation();
+            //   handleModal("view", true);
+            // }}
+            className="w-full relative block md:hidden mt-4 p-4 bg-[#F9F9F9] space-y-2"
           >
             <div className="space-y-1">
               <label className="text-[#A3A3A3] text-sm">Name</label>
@@ -152,7 +191,7 @@ export default function Events() {
     <div className="w-full min-h-inherit bg-white rounded-md p-4 space-y-6">
       <div className="w-full flex justify-between">
         <h2 className="card-heading">Your Events</h2>
-        <AppButton onClick={() => setModal(true)}>Add Event</AppButton>
+        <AppButton onClick={() => handleEvent({})}>Add Event</AppButton>
       </div>
       {filteredResults.length ? render_table : render_empty_list}
       <AppModal
@@ -162,7 +201,7 @@ export default function Events() {
         handleClose={() => setModal(false)}
         className="w-[calc(100vw_-_32px)] h-auto p-4 lg:w-[50vw]"
       >
-        <AddEvent handleClose={() => setModal(false)} />
+        <AddEvent handleClose={() => setModal(false)} event={event} />
       </AppModal>
     </div>
   );

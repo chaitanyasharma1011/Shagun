@@ -12,7 +12,7 @@ import { loggedInUserState } from "@/redux/slices/loggedInuserSlice";
 import { showNotification } from "@/redux/slices/notificationSlice";
 
 const { createState, schema } = GUEST_CREATION_FORM;
-export default function Guest({ addGuest, handleClose }) {
+export default function Guest({ addGuest, handleClose, guest }) {
   const dispatch = useDispatch();
   const formRef = useRef();
   const users = useSelector(usersState);
@@ -36,7 +36,7 @@ export default function Guest({ addGuest, handleClose }) {
         .filter((result) => result.phone.includes(search))
         .map((result) => {
           return {
-            _id: result.phone,
+            id: result.id,
             option: result.phone,
             description: result.phone,
             ...result,
@@ -46,7 +46,8 @@ export default function Guest({ addGuest, handleClose }) {
   };
 
   const handleSelect = (option, _, index, item) => {
-    setForm({ ...item });
+    const { name, phone, city, email } = item;
+    setForm({ ...form, name, phone, city, email });
   };
 
   const handleChange = (val) => {
@@ -105,7 +106,7 @@ export default function Guest({ addGuest, handleClose }) {
     setFilteredUsers(
       Object.values(users).map((result) => {
         return {
-          _id: result.phone,
+          id: result.id,
           option: result.phone,
           description: result.phone,
           ...result,
@@ -113,6 +114,10 @@ export default function Guest({ addGuest, handleClose }) {
       })
     );
   }, [users]);
+
+  useEffect(() => {
+    setForm(createState(guest));
+  }, [guest]);
 
   return (
     <form className="space-y-4" onSubmit={handleSubmit} ref={formRef}>
@@ -126,6 +131,7 @@ export default function Guest({ addGuest, handleClose }) {
         onSelect={handleSelect}
         onChange={handleChange}
         loading={false}
+        initialState={form?.phone}
         count={filteredUsers.length}
         {...onRenderError(errors.phone)}
       />

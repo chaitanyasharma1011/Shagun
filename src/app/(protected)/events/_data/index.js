@@ -20,6 +20,14 @@ export const header = [
     id: v4(),
     name: "Guest Count",
   },
+  {
+    id: v4(),
+    name: "Total Contribution",
+  },
+  {
+    id: v4(),
+    name: "Actions",
+  },
 ];
 
 export const EVENT_CREATION_FORM = {
@@ -28,6 +36,9 @@ export const EVENT_CREATION_FORM = {
     venue: data?.venue || "",
     date: dayjs(data?.date),
     guests: data?.guests || [],
+    open: true,
+    host: data?.host || "",
+    id: data?.id || v4(),
   }),
   schema: yup.object().shape({
     name: yup.string().required("This field is required").trim(),
@@ -43,6 +54,7 @@ export const GUEST_CREATION_FORM = {
     email: data?.email || "",
     city: data?.city || "",
     host: data?.host || "",
+    id: data?.id || v4(),
     contribution: data?.contribution || "",
   }),
   schema: yup.object().shape({

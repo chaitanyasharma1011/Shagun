@@ -2,7 +2,13 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {};
+const initialState = {
+  email: "cs@gmail.com",
+  password: "Fucklove1*",
+  name: "Chaitanya",
+  city: "Ujjain",
+  phone: "1234567890",
+};
 
 const loggedInUserSlice = createSlice({
   name: "loggedInUser",

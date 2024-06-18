@@ -1,5 +1,23 @@
 import * as yup from "yup";
 
+//RETURN COLOR PALLETTE
+export const default_color_pallette = [
+  "rgb(255, 100, 132,0.9)",
+  "rgb(3, 155, 255,0.9)",
+  "rgb(255, 205, 86,0.9)",
+  "rgb(75, 192, 192,0.9)",
+  "rgb(255, 158, 64,0.9)",
+  "rgb(153, 102, 254,0.9)",
+  "rgb(200, 203, 207,0.9)",
+  "rgb(3, 155, 255,0.9)",
+  "rgb(255, 100, 132,0.9)",
+  "rgb(255, 205, 86,0.9)",
+  "rgb(75, 192, 192,0.9)",
+  "rgb(255, 158, 64,0.9)",
+  "rgb(153, 102, 254,0.9)",
+  "rgb(200, 203, 207,0.9)",
+];
+
 // REGEX USED IN VALIDATION
 export const regex = {
   EMAIL:
