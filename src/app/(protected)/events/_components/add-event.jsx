@@ -34,8 +34,12 @@ export default function AddEvent({ handleClose, event }) {
   const addGuest = (guest) => {
     let temp = { ...form };
     let ind = temp?.guests.findIndex((item) => item?.id === guest?.id);
-    if (ind === -1) temp.guests = [...temp.guests, { ...guest }];
-    else temp.guests[ind] = { ...guest };
+    let tempGuests = [...temp.guests];
+    if (ind === -1) temp.guests = [...tempGuests, { ...guest }];
+    else {
+      tempGuests[ind] = { ...guest };
+      temp.guests = tempGuests;
+    }
     setForm(temp);
   };
 
